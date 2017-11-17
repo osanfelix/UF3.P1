@@ -9,8 +9,6 @@ public class Bullet : MonoBehaviour
 
 	Vector3 direction = Vector3.zero;
 
-	string enemyTag = "Enemy";
-
 	public void setDirection(Vector3 dir)
 	{
 		direction = dir;
@@ -21,21 +19,9 @@ public class Bullet : MonoBehaviour
 		baseSpeed = currentSpeed;
 	}
 
-	public void setEnemyTag(string enemyTag)
-	{
-		this.enemyTag = enemyTag;
-	}
-
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
 		transform.position = transform.position + direction * (baseSpeed + speed) * Time.deltaTime;
 	}
-
-	void OnTriggerEnter(Collider other)
-	{
-		//Debug.Log("Enter on " + other.tag);
-		if (other.tag == enemyTag)
-			other.gameObject.SetActive(false);
-    }
 }

@@ -3,33 +3,107 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Viper : MonoBehaviour {
+
+	public int lives = 3;
 	public float acceleration = 20f;
 	public float turnAcceleration = 2f;
 
 	public GameObject bullet = null;
 
-	float currentRotation = 0;
 	Rigidbody rigid = null;
 
+	bool turningRight = false;
+	bool turningLeft = false;
+
+	bool movingForward = false;
+	bool movingBackward = false;
+
+	bool fire = false;
+
+	Queue<GameObject> bulletQueue = new Queue<GameObject>();
 
 	void Start()
 	{
-		if(rigid == null)
+		Input.backButtonLeavesApp = true;
+
+		if (rigid == null)
 			rigid = GetComponent<Rigidbody>();
+	}
+
+	public void shot()
+	{
+		if (bulletQueue.Count < 10)
+		{
+			bullet = Instantiate(bullet);
+			bullet.name = "Bullet_" + name + "_" + (bulletQueue.Count + 1);
+			bullet.tag = gameObject.tag;
+		}
+		else
+		{
+			bullet = bulletQueue.Dequeue();
+		}
+		bulletQueue.Enqueue(bullet);
+
+		bullet.transform.position = transform.position + transform.forward * 0.1f;
+		bullet.GetComponent<Bullet>().setDirection(transform.forward);
+	}
+
+	public void inputLeft(bool on)
+	{
+		turningLeft = on;
+	}
+
+	public void inputRight(bool on)
+	{
+		turningRight = on;
+	}
+
+	public void inputUp(bool on)
+	{
+		movingForward = on;
+	}
+
+	public void inputDown(bool on)
+	{
+		movingBackward = on;
+	}
+
+	public void inputFire(bool on)
+	{
+		fire = on;
+	}
+
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.tag != gameObject.tag)
+		{
+			lives--;
+			if (lives <= 0)
+			{
+				Debug.Log("Player: Nave destruida");
+				gameObject.SetActive(false);
+			}
+			else
+			{
+				Debug.Log("Player: Daño recibido");
+				rigid.AddExplosionForce(500, other.transform.position, 1);
+			}
+		}
+			
 	}
 
 	void FixedUpdate()
 	{
 		// Movement
-		if (Input.GetKey(KeyCode.UpArrow))
-			rigid.AddForce(-transform.forward * acceleration);
-		else if (Input.GetKey(KeyCode.DownArrow))
+		if (Input.GetKey(KeyCode.UpArrow) || movingForward)
 			rigid.AddForce(transform.forward * acceleration);
+		else if (Input.GetKey(KeyCode.DownArrow) || movingBackward)
+			rigid.AddForce(-transform.forward * acceleration);
 
 		// Rotation
-		if (Input.GetKey(KeyCode.LeftArrow))
+		if (Input.GetKey(KeyCode.LeftArrow) || turningLeft)
 			rigid.AddTorque(-transform.up * turnAcceleration);
-		else if (Input.GetKey(KeyCode.RightArrow))
+		else if (Input.GetKey(KeyCode.RightArrow) || turningRight)
 			rigid.AddTorque(transform.up * turnAcceleration);
 
 		// Reset
@@ -42,13 +116,10 @@ public class Viper : MonoBehaviour {
 		}
 
 		// Shot
-		if(Input.GetKeyDown(KeyCode.Space))
+		if(Input.GetKeyDown(KeyCode.Space) || fire)
 		{
-			GameObject bala = Instantiate(bullet);
-			bala.transform.position = transform.position - transform.forward * 0.1f;
-			bala.GetComponent<Bullet>().setDirection(-transform.forward);
-			//bala.GetComponent<Bullet>().setCurrentSpeed(rigid.velocity.magnitude);
-			//bala.GetComponent<Bullet>().setCurrentSpeed(Vector3.Dot(-transform.forward, rigid.velocity));
+			shot();
 		}
+
 	}
 }
