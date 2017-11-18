@@ -14,15 +14,6 @@ public class Turret : MonoBehaviour
 
 	Queue<GameObject> bulletQueue = new Queue<GameObject>();
 
-	void OnTriggerEnter(Collider other)
-	{
-		if (other.tag != gameObject.tag)
-		{
-			Debug.Log("Turret: Destruida unidad " + name);
-			gameObject.SetActive(false);
-		}
-	}
-
 	// Update is called once per frame
 	void Update()
 	{
@@ -35,7 +26,7 @@ public class Turret : MonoBehaviour
 			// Shot
 			if (lastShotTime > shotRate)
 			{
-				lastShotTime = Random.Range(-1f, 0f);
+				lastShotTime = 0;
 				if (bulletQueue.Count < 10)
 				{
 					bullet = Instantiate(bullet);
@@ -46,8 +37,9 @@ public class Turret : MonoBehaviour
 					bullet = bulletQueue.Dequeue();
 				}
 				bulletQueue.Enqueue(bullet);
+				bullet.SetActive(true);
 
-				bullet.tag = "Enemy";
+				bullet.tag = "Turret";
 				bullet.GetComponent<Bullet>().speed = 0.5f;
 				bullet.transform.position = transform.position + gun.forward * 0.1f;
 				bullet.GetComponent<Bullet>().setDirection(gun.forward);

@@ -5,6 +5,8 @@ using UnityEngine;
 public class Viper : MonoBehaviour {
 
 	public int lives = 3;
+	public int bases = 0;
+
 	public float acceleration = 20f;
 	public float turnAcceleration = 2f;
 
@@ -43,51 +45,33 @@ public class Viper : MonoBehaviour {
 			bullet = bulletQueue.Dequeue();
 		}
 		bulletQueue.Enqueue(bullet);
-
+		bullet.SetActive(true);
 		bullet.transform.position = transform.position + transform.forward * 0.1f;
 		bullet.GetComponent<Bullet>().setDirection(transform.forward);
 	}
-
-	public void inputLeft(bool on)
+	public void baseFounded()
 	{
-		turningLeft = on;
-	}
+		bases++;
 
-	public void inputRight(bool on)
-	{
-		turningRight = on;
-	}
 
-	public void inputUp(bool on)
-	{
-		movingForward = on;
-	}
-
-	public void inputDown(bool on)
-	{
-		movingBackward = on;
-	}
-
-	public void inputFire(bool on)
-	{
-		fire = on;
-	}
-
-	void OnTriggerEnter(Collider other)
-	{
-		if (other.tag != gameObject.tag)
+		if(bases == 4)
 		{
-			lives--;
-			if (lives <= 0)
-			{
-				Debug.Log("Player: Nave destruida");
-				gameObject.SetActive(false);
-			}
-			else
-			{
-				Debug.Log("Player: Daño recibido");
-				rigid.AddExplosionForce(500, other.transform.position, 1);
-			}
+			Debug.Log("¡¡Fin del juego!!");
+		}
+	}
+
+	public void hit(GameObject other)
+	{
+		lives--;
+		if (lives <= 0)
+		{
+			Debug.Log("Player: Nave destruida");
+			gameObject.SetActive(false);
+		}
+		else
+		{
+			Debug.Log("Player: Daño recibido");
+			rigid.AddExplosionForce(500, other.transform.position, 1);
 		}
 			
 	}
@@ -120,6 +104,31 @@ public class Viper : MonoBehaviour {
 		{
 			shot();
 		}
+	}
 
+
+	public void inputLeft(bool on)
+	{
+		turningLeft = on;
+	}
+
+	public void inputRight(bool on)
+	{
+		turningRight = on;
+	}
+
+	public void inputUp(bool on)
+	{
+		movingForward = on;
+	}
+
+	public void inputDown(bool on)
+	{
+		movingBackward = on;
+	}
+
+	public void inputFire(bool on)
+	{
+		fire = on;
 	}
 }
