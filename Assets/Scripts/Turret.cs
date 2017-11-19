@@ -44,8 +44,7 @@ public class Turret : MonoBehaviour
 				bullet.transform.position = transform.position + gun.forward * 0.1f;
 				bullet.GetComponent<Bullet>().setDirection(gun.forward);
 			}
-
-			lastShotTime += Time.deltaTime;
 		}
+		lastShotTime += Time.deltaTime;
 	}
 }

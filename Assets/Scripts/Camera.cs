@@ -6,16 +6,16 @@ using UnityEngine;
 public class Camera : MonoBehaviour
 {
 	public float minHeight = 4f;
-	public float factor = 3f;
 	public float CameraHeightFactor = 3f;
 
-	public Transform viper;
+	public Transform target;
 
 	float height = 4f;
 
-	void FixedUpdate ()
+	void LateUpdate ()
 	{
-		height = Mathf.Lerp(transform.position.y, minHeight * (1 + viper.GetComponent<Rigidbody>().velocity.magnitude / CameraHeightFactor), 0.1f);
-		transform.position = Vector3.Lerp(transform.position, new Vector3(viper.position.x, height, viper.position.z), factor);	
+		//height = minHeight * (1 + target.GetComponent<Rigidbody>().velocity.magnitude / CameraHeightFactor);
+		height = Mathf.Lerp(transform.position.y, minHeight * (1 + target.GetComponent<Rigidbody>().velocity.magnitude / CameraHeightFactor), 0.1f);
+		transform.position = new Vector3(target.position.x, height, target.position.z);	
 	}
 }
